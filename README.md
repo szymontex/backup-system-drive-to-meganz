@@ -19,11 +19,11 @@ Be sure to have megacmd working at this point.
 Make note of your system drive device name. You can check it by running:
 `lsblk -o NAME,TYPE,MOUNTPOINT`
 Look for drives that have some partitions with names like boot boot/efi
-``nvme3n1                   disk
+```nvme3n1                   disk
 ├─nvme3n1p1               part  /boot/efi
 ├─nvme3n1p2               part  /boot
 └─nvme3n1p3               part
-  └─ubuntu--vg-ubuntu--lv lvm   /``
+  └─ubuntu--vg-ubuntu--lv lvm   /```
 In this case, the proper name for system drive will be `/dev/nvme3n1`
 
 Run `su` to place system_backup_to_mega.sh file to some safe spot that only root have access. I have dedicated place for scripts.
