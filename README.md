@@ -36,7 +36,7 @@ Make chmod on the file
 Make edits in the file `nano system_backup_to_mega.sh` in order to put your credentials, your disk drive path and folders for keeping temporary backups. Do it right.
 Run this script manually by using `sh system_backup_to_mega.sh`
 
-It's good to take a look on your active processes to confirm that everything is working. 
+It's good to take a look on your active processes in second window just to confirm that everything is working. 
 Try using `bashtop` for doing that. 
 If you see DD in the first part of the process, that means that system drive clone to iso is working.
 
