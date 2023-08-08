@@ -1,49 +1,72 @@
-# backup-system-drive-to-meganz
-Backup your linux system drive directly to your mega.nz account. 
+# Backup System Drive to Mega.nz
 
+Automate your Linux system drive backup process, sending it directly to your Mega.nz account using the `backup-system-drive-to-meganz` script.
 
-You need to have megacmd already working in your system. 
-https://mega.nz/linux/repo/ <--download repo 
-if you're only in command line you can use curl. For example: `curl -O https://mega.nz/linux/repo/xUbuntu_23.04/amd64/megacmd_1.6.3-1.1_amd64.deb`
-https://mega.io/cmd <--choose your system and run command with proper path
+## Prerequisites
 
-or you can check their github repo: https://github.com/meganz/MEGAcmd
+- You need to have `megacmd` already working in your system:
+    - Download the repo from [mega.nz linux repo](https://mega.nz/linux/repo/)
+    - If you're only in the command line, you can use `curl`. For example: 
+      ```
+      curl -O https://mega.nz/linux/repo/xUbuntu_23.04/amd64/megacmd_1.6.3-1.1_amd64.deb
+      ```
+    - Choose your system and run the command with the proper path from [here](https://mega.io/cmd).
+    - For more details, you can check their GitHub repo: [MEGAcmd GitHub](https://github.com/meganz/MEGAcmd).
+    
+- After installation, try to login. Check out their manual on GitHub: [MEGAcmd User Guide](https://github.com/meganz/MEGAcmd/blob/master/UserGuide.md#login-logout-whoami-mkdir-cd-get-put-du-mount-example). Ensure that `megacmd` is working at this point.
 
-after installation, try to login
-check out their manual:
-https://github.com/meganz/MEGAcmd/blob/master/UserGuide.md#login-logout-whoami-mkdir-cd-get-put-du-mount-example
+## Setup
 
-Be sure to have megacmd working at this point.
+1. **Determine System Drive Device Name**: 
+   - Run `lsblk -o NAME,TYPE,MOUNTPOINT` to check your system drive device name. Look for drives that have some partitions with names like `boot` or `boot/efi`.
+   
+     Example Output:
+     ```
+     nvme3n1                   disk
+     ├─nvme3n1p1               part  /boot/efi
+     ├─nvme3n1p2               part  /boot
+     └─nvme3n1p3               part
+       └─ubuntu--vg-ubuntu--lv lvm   /
+     ```
+     In this case, the proper name for the system drive will be `/dev/nvme3n1`.
 
+2. **Script Placement**:
+   - Place `system_backup_to_mega.sh` in a directory only accessible by the root user.
+   - Run `chmod +x /path/to/system_backup_to_mega.sh` to make the script executable.
 
-Make note of your system drive device name. You can check it by running:
-`lsblk -o NAME,TYPE,MOUNTPOINT`
-Look for drives that have some partitions with names like boot boot/efi
-```
-nvme3n1                   disk
-├─nvme3n1p1               part  /boot/efi
-├─nvme3n1p2               part  /boot
-└─nvme3n1p3               part
-  └─ubuntu--vg-ubuntu--lv lvm   /
-```
-In this case, the proper name for system drive will be `/dev/nvme3n1`
+3. **Modify the Script**:
+   - Edit the script to set your credentials, disk drive path, and folders for temporary backups.
+   
+     ```bash
+     nano system_backup_to_mega.sh
+     ```
+   
+4. **Run Manually**: 
+   - Execute the script manually using:
+   
+     ```bash
+     sh system_backup_to_mega.sh
+     ```
+   
+   - Monitor active processes in another terminal window to ensure everything is running correctly. Use `bashtop` or similar tools to do so.
 
-Run `su` to place system_backup_to_mega.sh file to some safe spot that only root have access. I have dedicated place for scripts.
+5. **Automate with CRON**:
+   - If everything works correctly and you can see your backup file in your Mega.nz account, you can automate the backup process using CRON:
+   
+     ```bash
+     crontab -e
+     ```
+   
+   - Add a new line to execute the script every day at 3 am:
+   
+     ```bash
+     0 3 * * * ~/path/to/system_backup_to_mega.sh
+     ```
 
-Make chmod on the file
-`chmod +x /path/to/system_backup_to_mega.sh`
+6. **CRON Timing**:
+   - If you're unfamiliar with setting up CRON timings, you can use online tools like [CronTab](https://tool.crontap.com/cronjob-debugger) or simply ask here for guidance.
 
-Make edits in the file `nano system_backup_to_mega.sh` in order to put your credentials, your disk drive path and folders for keeping temporary backups. Do it right.
-Run this script manually by using `sh system_backup_to_mega.sh`
+## Note
 
-It's good to take a look on your active processes in second window just to confirm that everything is working. 
-Try using `bashtop` for doing that. 
-If you see DD in the first part of the process, that means that system drive clone to iso is working.
+Using this script, your system will automatically create a backup of your drive and upload it to your Mega.nz account. Always ensure to test backup scripts in a controlled environment before deploying to ensure data integrity and prevent data loss.
 
-
-
-If everything worked as it should and you can see your file in your mega account you can try to put this file to automatic executing by using `crontab -e`
-Put a new line in there:
-`0 3 * * * ~/path/to/system_backup_to_mega.sh` that will execute this script every day at 3am
-
-If you don't know how to setup cron times: https://tool.crontap.com/cronjob-debugger this one is kinda nice to spit or just ask chatgpt
